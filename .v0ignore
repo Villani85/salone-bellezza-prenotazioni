@@ -1,0 +1,28 @@
+# Files to ignore when importing to V0
+node_modules/
+.next/
+out/
+build/
+.env*
+.vercel/
+*.log
+*.tsbuildinfo
+pnpm-lock.yaml
+package-lock.json
+
+# Documentation files (optional - V0 can read them but they're not code)
+*.md
+!README.md
+
+# Scripts (Python scripts for setup)
+scripts/
+*.py
+
+# Firebase config files (sensitive)
+firestore.indexes.json
+storage.rules
+
+# Temporary files
+.DS_Store
+Thumbs.db
+

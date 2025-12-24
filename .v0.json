@@ -1,0 +1,41 @@
+{
+  "name": "Salone Bellezza - Sistema Prenotazioni",
+  "description": "Sistema completo di gestione prenotazioni online per saloni di bellezza",
+  "framework": "nextjs",
+  "language": "typescript",
+  "ui": "tailwindcss",
+  "components": "shadcn/ui",
+  "database": "firebase-firestore",
+  "auth": "firebase-auth",
+  "storage": "firebase-storage",
+  "features": [
+    "authentication",
+    "booking-system",
+    "admin-dashboard",
+    "customer-portal",
+    "email-notifications",
+    "image-upload",
+    "calendar-view",
+    "service-management"
+  ],
+  "structure": {
+    "app": "app-router",
+    "components": "component-based",
+    "actions": "server-actions",
+    "types": "typescript-interfaces"
+  },
+  "patterns": {
+    "serverActions": "app/actions",
+    "clientComponents": "components",
+    "guards": "components/*/auth-guard.tsx",
+    "utils": "lib"
+  },
+  "importPaths": {
+    "@/*": "./*",
+    "@/components": "./components",
+    "@/lib": "./lib",
+    "@/types": "./types",
+    "@/app": "./app"
+  }
+}
+
