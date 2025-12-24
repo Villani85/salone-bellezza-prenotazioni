@@ -1,0 +1,106 @@
+═══════════════════════════════════════════════════════════════
+  VARIABILI D'AMBIENTE DA AGGIUNGERE SU RENDER - CORRETTE
+═══════════════════════════════════════════════════════════════
+
+Copia e incolla queste variabili nella sezione "Environment Variables"
+di Render, una alla volta.
+
+═══════════════════════════════════════════════════════════════
+FIREBASE CLIENT SDK (NEXT_PUBLIC_*)
+═══════════════════════════════════════════════════════════════
+
+Key: NEXT_PUBLIC_FIREBASE_API_KEY
+Value: AIzaSyB5mBDJaaScY9uy-9c4ri_67fVOrpheJSw
+
+Key: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+Value: prenotazioni-salone-b6045.firebaseapp.com
+⚠️ CORRETTO: Senza https:// e senza link Google!
+
+Key: NEXT_PUBLIC_FIREBASE_PROJECT_ID
+Value: prenotazioni-salone-b6045
+
+Key: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+Value: prenotazioni-salone-b6045.firebasestorage.app
+
+Key: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+Value: 535669353776
+
+Key: NEXT_PUBLIC_FIREBASE_APP_ID
+Value: 1:535669353776:web:da1050f0b28c6f312aecf5
+
+═══════════════════════════════════════════════════════════════
+FIREBASE ADMIN SDK
+═══════════════════════════════════════════════════════════════
+
+Key: FIREBASE_ADMIN_PROJECT_ID
+Value: prenotazioni-salone-b6045
+
+Key: FIREBASE_ADMIN_CLIENT_EMAIL
+Value: firebase-adminsdk-fbsvc@prenotazioni-salone-b6045.iam.gserviceaccount.com
+
+Key: FIREBASE_ADMIN_PRIVATE_KEY
+Value: -----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDHeaujtd33rCp4\nmxasdDX+r2fG+eOBBBPwCp9yO2+W6Sci2wLnHzWCsRhmtLpO5D+V1Tsd/F/qTe2o\ndh6TMiBetcBau5e4UoZFhvEwSrrIANLg4Rj4fTMEMltyI658yBopM9X4abh8CQLA\nNttB85BHKGrQBxWJCoXWX7WuTMXNjlMBjOkk1rLzdcyFRtHXytpHSjTKcUq4/S6x\n97H0mIyHoc00UzYu3a112f7IBXAEhqtSDx8e/pF261hDKAHTRQ/j5DMCjDQakQm6\nNH/2PntkjUsVeR1a/q+K2a4qomC/GyHayKmMx5tQgfigiI2ICHIlz59uiWsHlZvU\n/gEBrb1PAgMBAAECggEAEubCjtay278inx8C/QBeBW4VhVM0bYs3YG2BQk/DeSdK\noBDkq4XXijTBvSmu5b7XD5mO6n55kDgmJupaZ1Q+oPrT6UURUVPwiTIKNKtAG6eI\nU+rAdPtYFDO5Wo1rAUPsxq60vb82zfoEmrYX/J3ZtARuapvhPIUUvYWAL63yqFGD\nSWOHkTjDpP3q1o2pdznfxgYLbXM/TRaFgfDJygqy+osKQYzfPm95gFI0Dt1pbHp6\nnoS+ImpMRHs0//FbK3TUb40n8tgouFZzmTpNbUpCioTFU1HViirNTvNkV8iPlqLJ\nxQ0YMdDbgzaB6KfEXn0vjK8ql5F1heqQtChCH5I4IQKBgQDsb2l3whhk5+YUW5qQ\nor2fyWlqnRae8jWkLJmx07bLsc5SyNAsRosMkwjuwMAiVGj3oEqhRvZ477Da2lR5\nF9aQf+2ziF8hqSB4FyE1qz4tyjN62Rknhp+o2U8qKjKzjq3xueOaLH9Zq8NlofI0\nD/zaM1HWnY/Eg+2JWnqqwp1m2QKBgQDX+07aebuMYroFpOlY/3znY4CYkILKw1Lv\ngBQOW5CAEAiKo0hNoCbE13N4CId/PleeDU+Nyn4M3vl1xuJpST3bojpKYYUPyMkz\n6EDGOoZJnQR8jDgFKi9knJIMKCOFUU6/gvjL0F4h+xD5wj+8ubElmQGQzdcPVL17\npumklCK8ZwKBgB9L5BcRHy+ELsV1FrGciSM0gvq0zoC9qPIRYUrTrneqEpiMslma\nAN/qOp138DbbG4Xjtt1ASnHZsHxXuCTLTgCUnn9MRuNqwryCu0eiYjmncUcKo7TC\nsjGkikEXktyHv2im5YTL7ROOk+/JDwlrMFolvuh8tMIbgH7U9jXSSwmJAoGBAKls\nAFoPHdis5UFiMI3YtFEKU6jZy09k0tz+ujzdBMgAS8L8/M2vsFm+rFxfTHK7I53e\n0SXnzuMn0cXawmZWxshQRKtuPiO4nGQ0bwNQi2CZZBiTIaqjgdPJoiMZJWwB8OT3\nx1SR2hWLzbAt+TOA8n4MvRaq8WWcUpr5vtOURH9HAoGAX/SdClxx0C0EiXY6Mpoq\nLzgezmQdt/6ni+1t7mkiWRLLANfWLO9PdnvJxYOd9xbXAcohXBJHKQejw5YZsig3\nCX/Ud22ciz6NT/kWtBAsKwo24QPePa9NOtdq+yqMutBMnHQm3nzOEPxZHh/nBypb\nRTDoWs5CqPaVRo5A+i66NDE=\n-----END PRIVATE KEY-----\n
+⚠️ IMPORTANTE: 
+- SENZA virgolette all'inizio e alla fine
+- Mantieni i \n (Render li gestirà automaticamente)
+- Copia TUTTO incluso -----BEGIN e -----END
+
+═══════════════════════════════════════════════════════════════
+EMAIL (RESEND)
+═══════════════════════════════════════════════════════════════
+
+Key: RESEND_API_KEY
+Value: re_i97Vc6LN_HjA2EcZy1NmhdU9BPs64VE6X
+
+Key: EMAIL_FROM
+Value: onboarding@resend.dev
+
+Key: NEXT_PUBLIC_APP_URL
+Value: [LASCIA VUOTO ORA - Aggiungi DOPO il deploy con l'URL di Render]
+⚠️ Esempio dopo il deploy: https://salone-bellezza-prenotazioni-6.onrender.com
+
+═══════════════════════════════════════════════════════════════
+ISTRUZIONI PASSO-PASSO:
+═══════════════════════════════════════════════════════════════
+
+1. Vai su Render Dashboard → Seleziona il tuo progetto Web Service
+
+2. Clicca su "Environment" nel menu laterale
+
+3. Clicca "Add Environment Variable"
+
+4. Per ogni variabile sopra:
+   - Key: copia il nome (es. NEXT_PUBLIC_FIREBASE_API_KEY)
+   - Value: copia il valore corrispondente (senza virgolette, tranne se Render le richiede)
+
+5. Per FIREBASE_ADMIN_PRIVATE_KEY:
+   - Key: FIREBASE_ADMIN_PRIVATE_KEY
+   - Value: incolla TUTTO il blocco (senza virgolette esterne)
+   - Render accetta stringhe multilinea, quindi incolla tutto così com'è
+
+6. Per NEXT_PUBLIC_APP_URL:
+   - Lascia vuoto ORA
+   - DOPO il primo deploy, Render ti darà un URL tipo: https://salone-bellezza-prenotazioni-6.onrender.com
+   - Aggiungi quella variabile con quell'URL
+
+7. Dopo aver aggiunto tutte le variabili, clicca "Deploy web service"
+
+═══════════════════════════════════════════════════════════════
+CHECKLIST:
+═══════════════════════════════════════════════════════════════
+
+✅ NEXT_PUBLIC_FIREBASE_API_KEY
+✅ NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN (SENZA https:// o link Google!)
+✅ NEXT_PUBLIC_FIREBASE_PROJECT_ID
+✅ NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+✅ NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+✅ NEXT_PUBLIC_FIREBASE_APP_ID
+✅ FIREBASE_ADMIN_PROJECT_ID
+✅ FIREBASE_ADMIN_CLIENT_EMAIL
+✅ FIREBASE_ADMIN_PRIVATE_KEY (senza virgolette esterne)
+✅ RESEND_API_KEY
+✅ EMAIL_FROM
+⏳ NEXT_PUBLIC_APP_URL (da aggiungere DOPO il deploy)
+
+═══════════════════════════════════════════════════════════════
+
