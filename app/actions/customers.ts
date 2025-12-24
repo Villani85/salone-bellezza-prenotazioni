@@ -42,7 +42,7 @@ export async function getCustomerById(customerId: string): Promise<Customer | nu
       interests: data.interests || [],
       tags: data.tags || [],
       internalNotes: data.internalNotes,
-      createdAt: convertTimestamp(data.createdAt),
+      createdAt: convertTimestamp(data.createdAt) || new Date().toISOString(),
       updatedAt: convertTimestamp(data.updatedAt),
     }
 
@@ -96,7 +96,7 @@ export async function getCustomerByEmail(email: string): Promise<Customer | null
       interests: data.interests || [],
       tags: data.tags || [],
       internalNotes: data.internalNotes,
-      createdAt: convertTimestamp(data.createdAt),
+      createdAt: convertTimestamp(data.createdAt) || new Date().toISOString(),
       updatedAt: convertTimestamp(data.updatedAt),
     }
 
@@ -148,7 +148,7 @@ export async function getAllCustomers(
         interests: data.interests || [],
         tags: data.tags || [],
         internalNotes: data.internalNotes,
-        createdAt: convertTimestamp(data.createdAt),
+        createdAt: convertTimestamp(data.createdAt) || new Date().toISOString(),
         updatedAt: convertTimestamp(data.updatedAt),
       })
     })
@@ -213,7 +213,7 @@ export async function getCustomerBookings(customerId: string): Promise<Booking[]
         servicePrice: data.servicePrice,
         customerName: data.customerName,
         customerEmail: data.customerEmail,
-        createdAt: convertTimestamp(data.createdAt),
+        createdAt: convertTimestamp(data.createdAt) || new Date().toISOString(),
         updatedAt: convertTimestamp(data.updatedAt),
         confirmedBy: data.confirmedBy,
         rejectedBy: data.rejectedBy,

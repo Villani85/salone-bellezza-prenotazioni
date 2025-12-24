@@ -36,7 +36,7 @@ export async function getSalonBySlug(slug: string): Promise<Salon | null> {
       city: data.city,
       publicLink: data.publicLink,
       config: data.config,
-      createdAt: convertTimestamp(data.createdAt),
+      createdAt: convertTimestamp(data.createdAt) || new Date().toISOString(),
       updatedAt: convertTimestamp(data.updatedAt),
     }
 
@@ -81,7 +81,7 @@ export async function getSalonById(salonId: string): Promise<Salon | null> {
       city: data.city,
       publicLink: data.publicLink,
       config: data.config,
-      createdAt: convertTimestamp(data.createdAt),
+      createdAt: convertTimestamp(data.createdAt) || new Date().toISOString(),
       updatedAt: convertTimestamp(data.updatedAt),
     }
 
@@ -155,7 +155,7 @@ export async function getDefaultSalon(): Promise<Salon | null> {
       city: data.city,
       publicLink: data.publicLink,
       config: data.config,
-      createdAt: convertTimestamp(data.createdAt),
+      createdAt: convertTimestamp(data.createdAt) || new Date().toISOString(),
       updatedAt: convertTimestamp(data.updatedAt),
     }
 

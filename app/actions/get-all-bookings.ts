@@ -45,7 +45,7 @@ export async function getAllBookingsForWeek(
         servicePrice: data.servicePrice,
         customerName: data.customerName,
         customerEmail: data.customerEmail,
-        createdAt: convertTimestamp(data.createdAt),
+        createdAt: convertTimestamp(data.createdAt) || new Date().toISOString(),
         updatedAt: convertTimestamp(data.updatedAt),
         confirmedBy: data.confirmedBy,
         rejectedBy: data.rejectedBy,

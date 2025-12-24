@@ -1,5 +1,5 @@
 ═══════════════════════════════════════════════════════════════
-  VARIABILI D'AMBIENTE DA AGGIUNGERE SU RENDER
+VARIABILI D'AMBIENTE DA AGGIUNGERE SU RENDER
 ═══════════════════════════════════════════════════════════════
 
 Copia e incolla queste variabili nella sezione "Environment Variables"
@@ -10,64 +10,68 @@ FIREBASE CLIENT SDK (NEXT_PUBLIC_*)
 ═══════════════════════════════════════════════════════════════
 
 NEXT_PUBLIC_FIREBASE_API_KEY
-[Incolla qui il valore dal tuo .env.local]
+AIzaSyB5mBDJaaScY9uy-9c4ri_67fVOrpheJSw
 
 NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
-[Incolla qui il valore dal tuo .env.local]
+https://www.google.com/search?q=prenotazioni-salone-b6045.firebaseapp.com
 
 NEXT_PUBLIC_FIREBASE_PROJECT_ID
-[Incolla qui il valore dal tuo .env.local]
+prenotazioni-salone-b6045
 
 NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
-[Incolla qui il valore dal tuo .env.local]
+prenotazioni-salone-b6045.firebasestorage.app
 
 NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
-[Incolla qui il valore dal tuo .env.local]
+535669353776
 
 NEXT_PUBLIC_FIREBASE_APP_ID
-[Incolla qui il valore dal tuo .env.local]
+1:535669353776:web:da1050f0b28c6f312aecf5
 
 ═══════════════════════════════════════════════════════════════
 FIREBASE ADMIN SDK
 ═══════════════════════════════════════════════════════════════
 
 FIREBASE_ADMIN_PROJECT_ID
-[Incolla qui il valore dal tuo .env.local]
+prenotazioni-salone-b6045
 
 FIREBASE_ADMIN_CLIENT_EMAIL
-[Incolla qui il valore dal tuo .env.local]
+firebase-adminsdk-fbsvc@prenotazioni-salone-b6045.iam.gserviceaccount.com
 
 FIREBASE_ADMIN_PRIVATE_KEY
-[IMPORTANTE: Incolla l'intera chiave tra virgolette doppie, incluso:
------BEGIN PRIVATE KEY-----
-...
------END PRIVATE KEY-----
-Mantieni i \n come sono]
+"-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDHeaujtd33rCp4\nmxasdDX+r2fG+eOBBBPwCp9yO2+W6Sci2wLnHzWCsRhmtLpO5D+V1Tsd/F/qTe2o\ndh6TMiBetcBau5e4UoZFhvEwSrrIANLg4Rj4fTMEMltyI658yBopM9X4abh8CQLA\nNttB85BHKGrQBxWJCoXWX7WuTMXNjlMBjOkk1rLzdcyFRtHXytpHSjTKcUq4/S6x\n97H0mIyHoc00UzYu3a112f7IBXAEhqtSDx8e/pF261hDKAHTRQ/j5DMCjDQakQm6\nNH/2PntkjUsVeR1a/q+K2a4qomC/GyHayKmMx5tQgfigiI2ICHIlz59uiWsHlZvU\n/gEBrb1PAgMBAAECggEAEubCjtay278inx8C/QBeBW4VhVM0bYs3YG2BQk/DeSdK\noBDkq4XXijTBvSmu5b7XD5mO6n55kDgmJupaZ1Q+oPrT6UURUVPwiTIKNKtAG6eI\nU+rAdPtYFDO5Wo1rAUPsxq60vb82zfoEmrYX/J3ZtARuapvhPIUUvYWAL63yqFGD\nSWOHkTjDpP3q1o2pdznfxgYLbXM/TRaFgfDJygqy+osKQYzfPm95gFI0Dt1pbHp6\nnoS+ImpMRHs0//FbK3TUb40n8tgouFZzmTpNbUpCioTFU1HViirNTvNkV8iPlqLJ\nxQ0YMdDbgzaB6KfEXn0vjK8ql5F1heqQtChCH5I4IQKBgQDsb2l3whhk5+YUW5qQ\nor2fyWlqnRae8jWkLJmx07bLsc5SyNAsRosMkwjuwMAiVGj3oEqhRvZ477Da2lR5\nF9aQf+2ziF8hqSB4FyE1qz4tyjN62Rknhp+o2U8qKjKzjq3xueOaLH9Zq8NlofI0\nD/zaM1HWnY/Eg+2JWnqqwp1m2QKBgQDX+07aebuMYroFpOlY/3znY4CYkILKw1Lv\ngBQOW5CAEAiKo0hNoCbE13N4CId/PleeDU+Nyn4M3vl1xuJpST3bojpKYYUPyMkz\n6EDGOoZJnQR8jDgFKi9knJIMKCOFUU6/gvjL0F4h+xD5wj+8ubElmQGQzdcPVL17\npumklCK8ZwKBgB9L5BcRHy+ELsV1FrGciSM0gvq0zoC9qPIRYUrTrneqEpiMslma\nAN/qOp138DbbG4Xjtt1ASnHZsHxXuCTLTgCUnn9MRuNqwryCu0eiYjmncUcKo7TC\nsjGkikEXktyHv2im5YTL7ROOk+/JDwlrMFolvuh8tMIbgH7U9jXSSwmJAoGBAKls\nAFoPHdis5UFiMI3YtFEKU6jZy09k0tz+ujzdBMgAS8L8/M2vsFm+rFxfTHK7I53e\n0SXnzuMn0cXawmZWxshQRKtuPiO4nGQ0bwNQi2CZZBiTIaqjgdPJoiMZJWwB8OT3\nx1SR2hWLzbAt+TOA8n4MvRaq8WWcUpr5vtOURH9HAoGAX/SdClxx0C0EiXY6Mpoq\nLzgezmQdt/6ni+1t7mkiWRLLANfWLO9PdnvJxYOd9xbXAcohXBJHKQejw5YZsig3\nCX/Ud22ciz6NT/kWtBAsKwo24QPePa9NOtdq+yqMutBMnHQm3nzOEPxZHh/nBypb\nRTDoWs5CqPaVRo5A+i66NDE=\n-----END PRIVATE KEY-----\n"
 
 ═══════════════════════════════════════════════════════════════
-EMAIL (OPZIONALE)
+EMAIL (RESEND)
 ═══════════════════════════════════════════════════════════════
 
 RESEND_API_KEY
-[Incolla qui il valore dal tuo .env.local, se lo hai]
+re_i97Vc6LN_HjA2EcZy1NmhdU9BPs64VE6X
 
 EMAIL_FROM
-[Esempio: Salone <noreply@salone.it>]
+onboarding@resend.dev
 
 NEXT_PUBLIC_APP_URL
-[Esempio: https://salone-bellezza-prenotazioni-6.onrender.com
-IMPORTANTE: Usa l'URL che Render ti darà dopo il deploy]
+[INSERISCI QUI IL TUO DOMINIO RENDER, ES: https://www.google.com/search?q=https://tuo-progetto.onrender.com]
 
 ═══════════════════════════════════════════════════════════════
 ISTRUZIONI:
 ═══════════════════════════════════════════════════════════════
 
-1. Apri il file .env.local nella cartella del progetto
-2. Per ogni variabile sopra, copia il valore corrispondente
-3. Vai su Render → Environment Variables
-4. Clicca "Add Environment Variable"
-5. Incolla Key e Value
-6. Ripeti per tutte le variabili
+Vai su Render Dashboard → Seleziona il tuo progetto Web Service
+
+Clicca su "Environment" nel menu laterale
+
+Clicca "Add Environment Variable"
+
+Copia il NOME (es. NEXT_PUBLIC_FIREBASE_API_KEY) nel campo "Key"
+
+Copia il VALORE (es. AIzaSy...) nel campo "Value"
+
+Ripeti per tutte.
+
+IMPORTANTE: Per FIREBASE_ADMIN_PRIVATE_KEY, assicurati di incollare
+tutto il blocco comprese le virgolette " iniziali e finali se Render
+lo richiede come stringa JSON, oppure senza se accetta multiline.
+(Consiglio: Incolla esattamente come sopra con le virgolette).
 
 ═══════════════════════════════════════════════════════════════
-
