@@ -1,0 +1,38 @@
+services:
+  - type: web
+    name: salone-bellezza-prenotazioni
+    env: node
+    plan: free
+    buildCommand: pnpm install --no-frozen-lockfile && pnpm run build
+    startCommand: pnpm start
+    envVars:
+      # Firebase Client SDK
+      - key: NEXT_PUBLIC_FIREBASE_API_KEY
+        sync: false
+      - key: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+        sync: false
+      - key: NEXT_PUBLIC_FIREBASE_PROJECT_ID
+        sync: false
+      - key: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+        sync: false
+      - key: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+        sync: false
+      - key: NEXT_PUBLIC_FIREBASE_APP_ID
+        sync: false
+      
+      # Firebase Admin SDK
+      - key: FIREBASE_ADMIN_PROJECT_ID
+        sync: false
+      - key: FIREBASE_ADMIN_CLIENT_EMAIL
+        sync: false
+      - key: FIREBASE_ADMIN_PRIVATE_KEY
+        sync: false
+      
+      # Email (Opzionale)
+      - key: RESEND_API_KEY
+        sync: false
+      - key: EMAIL_FROM
+        sync: false
+      - key: NEXT_PUBLIC_APP_URL
+        sync: false
+

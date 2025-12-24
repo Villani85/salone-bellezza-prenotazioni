@@ -1,0 +1,73 @@
+═══════════════════════════════════════════════════════════════
+  VARIABILI D'AMBIENTE DA AGGIUNGERE SU RENDER
+═══════════════════════════════════════════════════════════════
+
+Copia e incolla queste variabili nella sezione "Environment Variables"
+di Render, una alla volta.
+
+═══════════════════════════════════════════════════════════════
+FIREBASE CLIENT SDK (NEXT_PUBLIC_*)
+═══════════════════════════════════════════════════════════════
+
+NEXT_PUBLIC_FIREBASE_API_KEY
+[Incolla qui il valore dal tuo .env.local]
+
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+[Incolla qui il valore dal tuo .env.local]
+
+NEXT_PUBLIC_FIREBASE_PROJECT_ID
+[Incolla qui il valore dal tuo .env.local]
+
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+[Incolla qui il valore dal tuo .env.local]
+
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+[Incolla qui il valore dal tuo .env.local]
+
+NEXT_PUBLIC_FIREBASE_APP_ID
+[Incolla qui il valore dal tuo .env.local]
+
+═══════════════════════════════════════════════════════════════
+FIREBASE ADMIN SDK
+═══════════════════════════════════════════════════════════════
+
+FIREBASE_ADMIN_PROJECT_ID
+[Incolla qui il valore dal tuo .env.local]
+
+FIREBASE_ADMIN_CLIENT_EMAIL
+[Incolla qui il valore dal tuo .env.local]
+
+FIREBASE_ADMIN_PRIVATE_KEY
+[IMPORTANTE: Incolla l'intera chiave tra virgolette doppie, incluso:
+-----BEGIN PRIVATE KEY-----
+...
+-----END PRIVATE KEY-----
+Mantieni i \n come sono]
+
+═══════════════════════════════════════════════════════════════
+EMAIL (OPZIONALE)
+═══════════════════════════════════════════════════════════════
+
+RESEND_API_KEY
+[Incolla qui il valore dal tuo .env.local, se lo hai]
+
+EMAIL_FROM
+[Esempio: Salone <noreply@salone.it>]
+
+NEXT_PUBLIC_APP_URL
+[Esempio: https://salone-bellezza-prenotazioni-6.onrender.com
+IMPORTANTE: Usa l'URL che Render ti darà dopo il deploy]
+
+═══════════════════════════════════════════════════════════════
+ISTRUZIONI:
+═══════════════════════════════════════════════════════════════
+
+1. Apri il file .env.local nella cartella del progetto
+2. Per ogni variabile sopra, copia il valore corrispondente
+3. Vai su Render → Environment Variables
+4. Clicca "Add Environment Variable"
+5. Incolla Key e Value
+6. Ripeti per tutte le variabili
+
+═══════════════════════════════════════════════════════════════
+
