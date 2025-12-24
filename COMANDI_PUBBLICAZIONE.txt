@@ -1,0 +1,23 @@
+═══════════════════════════════════════════════════════════
+  COMANDI PER PUBBLICARE SU GITHUB
+═══════════════════════════════════════════════════════════
+
+1. Crea il repository su GitHub:
+   https://github.com/new
+   Nome: salone-bellezza-prenotazioni
+
+2. Esegui questi comandi:
+
+   git remote add origin https://github.com/Villani85/salone-bellezza-prenotazioni.git
+   
+   git push -u origin main
+
+3. Quando richiesto:
+   Username: Villani85
+   Password: Usa Personal Access Token (non la password!)
+   
+   Crea token da: https://github.com/settings/tokens
+   Scope: repo
+
+═══════════════════════════════════════════════════════════
+
