@@ -37,10 +37,12 @@ function validateBookingInput(input: CreateBookingInput): { valid: boolean; erro
     return { valid: false, error: "Invalid time format. Expected HH:mm" }
   }
 
-  // Check if date is in the past
+  // Check if date is in the past (allow today)
   const bookingDate = parse(date, "yyyy-MM-dd", new Date())
   const today = new Date()
   today.setHours(0, 0, 0, 0)
+  bookingDate.setHours(0, 0, 0, 0)
+
   if (isBefore(bookingDate, today)) {
     return { valid: false, error: "Cannot book appointments in the past" }
   }
@@ -53,7 +55,8 @@ function validateBookingInput(input: CreateBookingInput): { valid: boolean; erro
 }
 
 /**
- * Check for conflicts with existing bookings using transaction
+ * Check for conflicts with existing bookings (query + filter in memory)
+ * (Nota: non è una vera transaction, ma va bene come double-check)
  */
 async function checkConflictsInTransaction(
   date: string,
@@ -63,15 +66,18 @@ async function checkConflictsInTransaction(
 ): Promise<{ hasConflict: boolean; conflictCount: number }> {
   try {
     const adminDb = getAdminDb()
-    // Query without "in" to avoid index requirement, filter in memory
+
     const bookingsSnapshot = await adminDb
       .collection("bookings")
       .where("date", "==", date)
       .get()
-    
-    const existingBookings = bookingsSnapshot.docs
-      .map((doc) => doc.data())
-      .filter((booking) => booking.status === "PENDING" || booking.status === "CONFIRMED") as Booking[]
+
+    const existingBookings: Booking[] = bookingsSnapshot.docs
+      .map((doc) => {
+        const data = doc.data() as Partial<Booking>
+        return { id: doc.id, ...data } as Booking
+      })
+      .filter((b) => b.status === "PENDING" || b.status === "CONFIRMED")
 
     const slotStart = parse(startTime, "HH:mm", new Date())
     const slotEnd = parse(endTime, "HH:mm", new Date())
@@ -82,28 +88,26 @@ async function checkConflictsInTransaction(
       const bookingStart = parse(booking.startTime, "HH:mm", new Date())
       const bookingEnd = addMinutes(parse(booking.endTime, "HH:mm", new Date()), bufferTime)
 
-      // Check for overlap
       if (isBefore(slotStart, bookingEnd) && isBefore(bookingStart, slotEnd)) {
         conflictCount++
       }
     }
 
     return { hasConflict: conflictCount > 0, conflictCount }
-  } catch (error) {
-    logger.error("Error checking conflicts", { error, date, startTime, endTime })
+  } catch (error: any) {
+    logger.error("Error checking conflicts", { error: error?.message || error, date, startTime, endTime })
     return { hasConflict: true, conflictCount: Infinity }
   }
 }
 
 /**
- * Create a new booking with server-side validation and transaction safety
- * Uses Firestore transactions to prevent race conditions
+ * Create a new booking with server-side validation and race-condition reduction
  */
 export async function createBooking(input: CreateBookingInput): Promise<CreateBookingResult> {
-  const startTime = Date.now()
+  const startMs = Date.now()
 
   try {
-    // 1. Validate input
+    // 1) Validate input
     const validation = validateBookingInput(input)
     if (!validation.valid) {
       logger.warn("Invalid booking input", { input, error: validation.error })
@@ -112,7 +116,7 @@ export async function createBooking(input: CreateBookingInput): Promise<CreateBo
 
     const { serviceId, date, startTime: startTimeStr, userId } = input
 
-    // 2. Fetch service details and validate using Admin SDK
+    // 2) Fetch service
     const adminDb = getAdminDb()
     const serviceRef = adminDb.collection("services").doc(serviceId)
     const serviceSnap = await serviceRef.get()
@@ -122,15 +126,24 @@ export async function createBooking(input: CreateBookingInput): Promise<CreateBo
       return { success: false, error: "Il servizio selezionato non è disponibile." }
     }
 
-    const service = serviceSnap.data() as Service
+    const service = serviceSnap.data() as Service | undefined
+    if (!service) {
+      logger.warn("Service data undefined", { serviceId })
+      return { success: false, error: "Il servizio selezionato non è disponibile." }
+    }
+
     if (!service.active) {
       logger.warn("Service is not active", { serviceId })
       return { success: false, error: "Il servizio selezionato non è attualmente disponibile." }
     }
 
-    const serviceDuration = service.duration
+    const serviceDuration = Number(service.duration ?? 0)
+    if (!Number.isFinite(serviceDuration) || serviceDuration <= 0) {
+      logger.warn("Invalid service duration in service data", { serviceId, duration: service.duration })
+      return { success: false, error: "Durata servizio non valida. Contatta il salone." }
+    }
 
-    // 3. Fetch configuration using Admin SDK
+    // 3) Fetch configuration
     const configRef = adminDb.collection("settings").doc("config")
     const configSnap = await configRef.get()
 
@@ -145,97 +158,96 @@ export async function createBooking(input: CreateBookingInput): Promise<CreateBo
     }
 
     const config: SalonConfig = configSnap.exists
-      ? ({ ...defaultConfig, ...configSnap.data() } as SalonConfig)
+      ? ({ ...defaultConfig, ...(configSnap.data() as any) } as SalonConfig)
       : defaultConfig
 
-    // 4. Compute end time
-    // Use the booking date as base for parsing times
+    const bufferTime = Number(config.bufferTime ?? defaultConfig.bufferTime)
+    const resources = Number(config.resources ?? defaultConfig.resources)
+
+    // 4) Compute end time
     const startDate = parse(`${date} ${startTimeStr}`, "yyyy-MM-dd HH:mm", new Date())
     const endDate = addMinutes(startDate, serviceDuration)
     const endTime = format(endDate, "HH:mm")
 
-    // 5. Validate time is within opening hours
+    // 5) Validate time within opening hours
     const openingDateTime = parse(`${date} ${config.openingTime}`, "yyyy-MM-dd HH:mm", new Date())
     const closingDateTime = parse(`${date} ${config.closingTime}`, "yyyy-MM-dd HH:mm", new Date())
 
     if (isBefore(startDate, openingDateTime) || isAfter(endDate, closingDateTime)) {
-      logger.warn("Booking outside opening hours", { startTime: startTimeStr, config })
-      return {
-        success: false,
-        error: "L'orario selezionato è fuori dagli orari di apertura del salone.",
-      }
+      logger.warn("Booking outside opening hours", { startTime: startTimeStr, endTime, config })
+      return { success: false, error: "L'orario selezionato è fuori dagli orari di apertura del salone." }
     }
 
-    // 6. Re-validate availability to prevent race conditions
-    // This double-check reduces the window for race conditions
+    // 6) Re-validate availability
     const availableSlots = await getAvailableSlots(date, serviceDuration)
-
     if (!availableSlots.includes(startTimeStr)) {
-      logger.warn("Slot no longer available", { date, startTime: startTimeStr })
+      logger.warn("Slot no longer available (availability)", { date, startTime: startTimeStr })
       return {
         success: false,
         error: "Questo slot temporale non è più disponibile. Si prega di selezionare un altro orario.",
       }
     }
 
-    // 7. Final conflict check before creating (double-check to reduce race condition window)
-    // Use Admin SDK and filter in memory to avoid index requirement
-    const bookingsSnapshot = await adminDb
-      .collection("bookings")
-      .where("date", "==", date)
-      .get()
-    
-    const existingBookings = bookingsSnapshot.docs
-      .map((doc) => doc.data())
-      .filter((booking) => booking.status === "PENDING" || booking.status === "CONFIRMED") as Booking[]
+    // 7) Final conflict check (double-check)
+    const bookingsSnapshot = await adminDb.collection("bookings").where("date", "==", date).get()
+
+    const existingBookings: Booking[] = bookingsSnapshot.docs
+      .map((doc) => {
+        const data = doc.data() as Partial<Booking>
+        return { id: doc.id, ...data } as Booking
+      })
+      .filter((b) => b.status === "PENDING" || b.status === "CONFIRMED")
 
     const slotStart = parse(startTimeStr, "HH:mm", new Date())
     const slotEnd = parse(endTime, "HH:mm", new Date())
 
     let conflictCount = 0
-
     for (const booking of existingBookings) {
       const bookingStart = parse(booking.startTime, "HH:mm", new Date())
-      const bookingEnd = addMinutes(parse(booking.endTime, "HH:mm", new Date()), config.bufferTime)
+      const bookingEnd = addMinutes(parse(booking.endTime, "HH:mm", new Date()), bufferTime)
 
       if (isBefore(slotStart, bookingEnd) && isBefore(bookingStart, slotEnd)) {
         conflictCount++
       }
     }
 
-    // Check if we still have enough resources
-    if (conflictCount >= config.resources) {
-      logger.warn("Slot conflict detected", { date, startTime: startTimeStr, conflictCount, resources: config.resources })
+    if (conflictCount >= resources) {
+      logger.warn("Slot conflict detected", { date, startTime: startTimeStr, conflictCount, resources })
       return {
         success: false,
         error: "Questo slot temporale non è più disponibile. Si prega di selezionare un altro orario.",
       }
     }
 
-    // 8. Fetch customer data for booking
+    // 8) Fetch customer data (safe)
     const customerRef = adminDb.collection("customers").doc(userId)
     const customerSnap = await customerRef.get()
+
     let customerName = ""
     let customerEmail = ""
 
     if (customerSnap.exists) {
-      const customerData = customerSnap.data()
-      customerName = `${customerData.firstName} ${customerData.lastName}`
-      customerEmail = customerData.email
+      const customerData = customerSnap.data() as any | undefined
+      if (customerData) {
+        const first = customerData.firstName || ""
+        const last = customerData.lastName || ""
+        customerName = `${first} ${last}`.trim()
+        customerEmail = customerData.email || ""
+      }
     }
 
-    // 9. Create the booking using Admin SDK
-    const bookingData = {
+    // 9) Create booking
+    const bookingData: Record<string, any> = {
       date,
       startTime: startTimeStr,
       endTime,
       status: "PENDING" as const,
       userId,
-      customerId: userId, // customerId is the same as userId
+      customerId: userId,
       serviceId,
-      serviceName: service.name,
-      servicePrice: service.price,
-      price: service.price,
+      serviceName: service.name || "",
+      servicePrice: Number(service.price ?? 0),
+      price: Number(service.price ?? 0),
       customerName,
       customerEmail,
       createdAt: new Date().toISOString(),
@@ -243,9 +255,10 @@ export async function createBooking(input: CreateBookingInput): Promise<CreateBo
 
     const bookingRef = adminDb.collection("bookings").doc()
     await bookingRef.set(bookingData)
-    const bookingId = bookingRef.id
 
-    const duration = Date.now() - startTime
+    const bookingId = bookingRef.id
+    const duration = Date.now() - startMs
+
     logger.info("Booking created successfully", {
       bookingId,
       serviceId,
@@ -255,39 +268,31 @@ export async function createBooking(input: CreateBookingInput): Promise<CreateBo
       duration,
     })
 
-    return {
-      success: true,
-      id: bookingId,
-    }
+    return { success: true, id: bookingId }
   } catch (error: any) {
-    const duration = Date.now() - startTime
-    logger.error("Error creating booking", {
-      error: error.message || error,
-      input,
-      duration,
-    })
+    const duration = Date.now() - startMs
+    logger.error("Error creating booking", { error: error?.message || error, input, duration })
 
-    // Provide user-friendly error messages
-    if (error.message === "Service not found") {
+    // User-friendly errors
+    const msg = String(error?.message || "")
+
+    if (msg === "Service not found") {
       return { success: false, error: "Il servizio selezionato non è disponibile." }
     }
 
-    if (error.message === "Service is not available") {
+    if (msg === "Service is not available") {
       return { success: false, error: "Il servizio selezionato non è attualmente disponibile." }
     }
 
-    if (error.message.includes("time slot is no longer available")) {
+    if (msg.includes("time slot is no longer available")) {
       return {
         success: false,
         error: "Questo slot temporale non è più disponibile. Si prega di selezionare un altro orario.",
       }
     }
 
-    if (error.message.includes("outside opening hours")) {
-      return {
-        success: false,
-        error: "L'orario selezionato è fuori dagli orari di apertura del salone.",
-      }
+    if (msg.includes("outside opening hours")) {
+      return { success: false, error: "L'orario selezionato è fuori dagli orari di apertura del salone." }
     }
 
     return {
