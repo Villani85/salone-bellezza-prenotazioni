@@ -18,9 +18,10 @@ interface TimeSlot {
  */
 export async function getAvailableSlots(date: string, serviceDuration: number): Promise<string[]> {
   const startTime = Date.now()
+
   try {
     // Validate inputs
-    if (serviceDuration <= 0) {
+    if (!Number.isFinite(serviceDuration) || serviceDuration <= 0) {
       logger.warn("Invalid service duration", { serviceDuration, date })
       return []
     }
@@ -35,30 +36,30 @@ export async function getAvailableSlots(date: string, serviceDuration: number): 
     const today = new Date()
     today.setHours(0, 0, 0, 0)
     bookingDate.setHours(0, 0, 0, 0)
+
     if (isBefore(bookingDate, today)) {
       logger.warn("Attempted to get slots for past date", { date })
       return []
     }
 
-    // 1. Check if date is a closed day (weekday or specific date)
+    // 1) Day of week
     const dayOfWeek = bookingDate.getDay() // 0 = Sunday, 1 = Monday, etc.
 
-    // 2. Fetch salon configuration using Admin SDK
+    // 2) Fetch salon configuration using Admin SDK
     const adminDb = getAdminDb()
-    
-    // Try to get default salon first
+
     let config: SalonConfig | null = null
-    
-    // Get default salon
+
+    // Try salons collection first (first salon as default)
     const salonsSnapshot = await adminDb.collection("salons").limit(1).get()
     if (!salonsSnapshot.empty) {
-      const salonData = salonsSnapshot.docs[0].data()
-      if (salonData.config) {
+      const salonData: any = salonsSnapshot.docs[0].data()
+      if (salonData?.config) {
         config = salonData.config as SalonConfig
       }
     }
-    
-    // Fallback to settings/config if no salon config found
+
+    // Fallback to settings/config
     if (!config) {
       const configRef = adminDb.collection("settings").doc("config")
       const configSnap = await configRef.get()
@@ -82,40 +83,47 @@ export async function getAvailableSlots(date: string, serviceDuration: number): 
       ? ({ ...defaultConfig, ...config } as SalonConfig)
       : defaultConfig
 
-    // 3. Check if date is closed (specific date)
-    if (finalConfig.closedDates && finalConfig.closedDates.includes(date)) {
+    // 3) Check if date is closed (specific date)
+    if (finalConfig.closedDates?.includes(date)) {
       logger.info("Date is in closed dates", { date })
       return []
     }
 
-    // 4. Check if day of week is closed
-    if (finalConfig.closedDaysOfWeek && finalConfig.closedDaysOfWeek.includes(dayOfWeek)) {
+    // 4) Check if day of week is closed
+    if (finalConfig.closedDaysOfWeek?.includes(dayOfWeek)) {
       logger.info("Day of week is closed", { date, dayOfWeek })
       return []
     }
 
-    const { openingTime, closingTime, timeStep, resources, bufferTime } = finalConfig
+    const openingTime = finalConfig.openingTime || defaultConfig.openingTime
+    const closingTime = finalConfig.closingTime || defaultConfig.closingTime
+    const timeStep = Number(finalConfig.timeStep ?? defaultConfig.timeStep)
+    const resources = Number(finalConfig.resources ?? defaultConfig.resources)
+    const bufferTime = Number(finalConfig.bufferTime ?? defaultConfig.bufferTime)
 
-    // 2. Fetch all PENDING and CONFIRMED bookings for the requested date using Admin SDK
+    // 5) Fetch all bookings for the requested date
     const bookingsSnapshot = await adminDb
       .collection("bookings")
       .where("date", "==", date)
       .get()
-    
-    // Filter in memory for PENDING and CONFIRMED status
-    const existingBookings: Booking[] = bookingsSnapshot.docs
-      .map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }))
-      .filter((booking) => booking.status === "PENDING" || booking.status === "CONFIRMED") as Booking[]
 
-    // 3. Parse opening and closing times
-    // Use the booking date as base for parsing times
+    // ✅ Tipizzazione corretta: doc.data() -> Partial<Booking> e poi cast a Booking
+    // + filtro solo PENDING/CONFIRMED
+    const existingBookings: Booking[] = bookingsSnapshot.docs
+      .map((doc) => {
+        const data = doc.data() as Partial<Booking>
+        return {
+          id: doc.id,
+          ...data,
+        } as Booking
+      })
+      .filter((booking) => booking.status === "PENDING" || booking.status === "CONFIRMED")
+
+    // 6) Parse opening and closing times using booking date as base
     const openingDateTime = parse(`${date} ${openingTime}`, "yyyy-MM-dd HH:mm", new Date())
     const closingDateTime = parse(`${date} ${closingTime}`, "yyyy-MM-dd HH:mm", new Date())
 
-    // 4. Generate all potential time slots
+    // 7) Generate all potential time slots
     const availableSlots: string[] = []
     let currentSlot = openingDateTime
 
@@ -131,10 +139,14 @@ export async function getAvailableSlots(date: string, serviceDuration: number): 
         break
       }
 
-      // 5. Check for conflicts with existing bookings
-      const conflicts = countConflicts({ start: slotStartTime, end: slotEndTime }, existingBookings, bufferTime)
+      // 8) Check for conflicts with existing bookings (buffer included)
+      const conflicts = countConflicts(
+        { start: slotStartTime, end: slotEndTime },
+        existingBookings,
+        bufferTime
+      )
 
-      // 6. If conflicts < resources, the slot is available
+      // 9) If conflicts < resources, the slot is available
       if (conflicts < resources) {
         availableSlots.push(slotStartTime)
       }
@@ -144,7 +156,12 @@ export async function getAvailableSlots(date: string, serviceDuration: number): 
     }
 
     const duration = Date.now() - startTime
-    logger.info("Available slots fetched", { date, serviceDuration, slotsCount: availableSlots.length, duration })
+    logger.info("Available slots fetched", {
+      date,
+      serviceDuration,
+      slotsCount: availableSlots.length,
+      duration,
+    })
     return availableSlots
   } catch (error: any) {
     const duration = Date.now() - startTime
@@ -171,9 +188,11 @@ function countConflicts(slot: TimeSlot, bookings: Booking[], bufferTime: number)
     // Parse booking times and add buffer to existing booking end time
     const bookingStart = parse(booking.startTime, "HH:mm", new Date())
     const bookingEnd = addMinutes(parse(booking.endTime, "HH:mm", new Date()), bufferTime)
+
     const slotStart = parse(slot.start, "HH:mm", new Date())
     const slotEnd = parse(slot.end, "HH:mm", new Date())
 
+    // overlap: slotStart < bookingEnd && bookingStart < slotEnd
     return isBefore(slotStart, bookingEnd) && isBefore(bookingStart, slotEnd)
   }).length
 }
