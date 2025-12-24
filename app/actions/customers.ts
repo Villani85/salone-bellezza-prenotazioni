@@ -21,6 +21,11 @@ export async function getCustomerById(customerId: string): Promise<Customer | nu
     }
 
     const data = customerDoc.data()
+    if (!data) {
+      logger.warn("Customer data is undefined", { customerId })
+      return null
+    }
+
     const customer: Customer = {
       id: customerDoc.id,
       firstName: data.firstName,
@@ -70,6 +75,10 @@ export async function getCustomerByEmail(email: string): Promise<Customer | null
 
     const customerDoc = snapshot.docs[0]
     const data = customerDoc.data()
+    if (!data) {
+      logger.warn("Customer data is undefined", { email })
+      return null
+    }
 
     const customer: Customer = {
       id: customerDoc.id,
@@ -119,6 +128,10 @@ export async function getAllCustomers(
 
     snapshot.docs.forEach((doc) => {
       const data = doc.data()
+      if (!data) {
+        logger.warn("Customer data is undefined, skipping", { docId: doc.id })
+        return
+      }
       customers.push({
         id: doc.id,
         firstName: data.firstName,
@@ -180,6 +193,10 @@ export async function getCustomerBookings(customerId: string): Promise<Booking[]
     const bookings: Booking[] = []
     snapshot.docs.forEach((doc) => {
       const data = doc.data()
+      if (!data) {
+        logger.warn("Booking data is undefined, skipping", { docId: doc.id })
+        return
+      }
       bookings.push({
         id: doc.id,
         date: data.date,

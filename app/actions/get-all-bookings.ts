@@ -25,6 +25,10 @@ export async function getAllBookingsForWeek(
     const bookings: Booking[] = []
     bookingsSnapshot.docs.forEach((doc) => {
       const data = doc.data()
+      if (!data) {
+        logger.warn("Booking data is undefined, skipping", { docId: doc.id })
+        return
+      }
       bookings.push({
         id: doc.id,
         date: data.date,

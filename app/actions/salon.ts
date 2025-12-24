@@ -21,6 +21,10 @@ export async function getSalonBySlug(slug: string): Promise<Salon | null> {
 
     const salonDoc = snapshot.docs[0]
     const data = salonDoc.data()
+    if (!data) {
+      logger.warn("Salon data is undefined", { slug, salonId: salonDoc.id })
+      return null
+    }
 
     const salon: Salon = {
       id: salonDoc.id,
@@ -62,6 +66,11 @@ export async function getSalonById(salonId: string): Promise<Salon | null> {
     }
 
     const data = salonDoc.data()
+    if (!data) {
+      logger.warn("Salon data is undefined", { salonId })
+      return null
+    }
+
     const salon: Salon = {
       id: salonDoc.id,
       name: data.name,
@@ -131,6 +140,10 @@ export async function getDefaultSalon(): Promise<Salon | null> {
     // Return first salon found
     const salonDoc = snapshot.docs[0]
     const data = salonDoc.data()
+    if (!data) {
+      logger.warn("Salon data is undefined", { salonId: salonDoc.id })
+      return null
+    }
 
     const salon: Salon = {
       id: salonDoc.id,
@@ -174,6 +187,9 @@ export async function updateSalonConfig(
     }
 
     const currentData = salonDoc.data()
+    if (!currentData) {
+      return { success: false, error: "Dati salone non trovati" }
+    }
     const currentConfig = currentData.config || {}
 
     const updatedConfig: SalonConfig = {

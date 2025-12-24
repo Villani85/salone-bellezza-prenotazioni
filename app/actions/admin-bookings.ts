@@ -33,6 +33,10 @@ export async function getPendingBookings(userId?: string): Promise<BookingWithDe
 
     for (const bookingDoc of bookingsSnapshot.docs) {
       const data = bookingDoc.data()
+      if (!data) {
+        logger.warn("Booking data is undefined, skipping", { docId: bookingDoc.id })
+        continue
+      }
 
       let serviceData = serviceCache.get(data.serviceId)
       if (!serviceData) {
@@ -112,6 +116,7 @@ export async function getTodayStats(userId?: string): Promise<{ total: number; p
 
     bookingsSnapshot.forEach((doc) => {
       const data = doc.data()
+      if (!data) return
       if (data.status === "PENDING") pending++
       if (data.status === "CONFIRMED") confirmed++
       if (data.status === "REJECTED") rejected++
