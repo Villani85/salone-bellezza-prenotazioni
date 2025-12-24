@@ -14,9 +14,14 @@ export async function acceptAlternativeSlot(
   selectedSlot: AlternativeSlot
 ): Promise<{ success: boolean; error?: string }> {
   const startTime = Date.now()
+
   try {
     if (!bookingId || !selectedSlot) {
       return { success: false, error: "Booking ID and selected slot are required" }
+    }
+
+    if (!selectedSlot.date || !selectedSlot.startTime || !selectedSlot.endTime) {
+      return { success: false, error: "Lo slot selezionato non è valido" }
     }
 
     // Verify booking exists and is in correct status using Admin SDK
@@ -29,7 +34,12 @@ export async function acceptAlternativeSlot(
       return { success: false, error: "Prenotazione non trovata" }
     }
 
-    const bookingData = bookingSnap.data()
+    const bookingData = bookingSnap.data() as Partial<Booking> | undefined
+    if (!bookingData) {
+      logger.error("Booking snapshot exists but data is undefined", { bookingId })
+      return { success: false, error: "Dati prenotazione non disponibili" }
+    }
+
     if (bookingData.status !== "ALTERNATIVE_PROPOSED") {
       logger.warn("Attempted to accept alternative for booking with invalid status", {
         bookingId,
@@ -39,9 +49,9 @@ export async function acceptAlternativeSlot(
     }
 
     // Verify selected slot is in the proposed alternatives
-    const alternativeSlots = bookingData.alternativeSlots || []
+    const alternativeSlots = (bookingData.alternativeSlots || []) as AlternativeSlot[]
     const isValidSlot = alternativeSlots.some(
-      (slot: AlternativeSlot) => slot.date === selectedSlot.date && slot.startTime === selectedSlot.startTime
+      (slot) => slot.date === selectedSlot.date && slot.startTime === selectedSlot.startTime
     )
 
     if (!isValidSlot) {
@@ -49,32 +59,36 @@ export async function acceptAlternativeSlot(
     }
 
     // Update booking with selected alternative using Admin SDK
-    const updateData: any = {
+    const updateData: Partial<Booking> & Record<string, any> = {
       date: selectedSlot.date,
       startTime: selectedSlot.startTime,
       endTime: selectedSlot.endTime,
       status: "CONFIRMED",
       selectedAlternativeSlot: selectedSlot,
       updatedAt: new Date().toISOString(),
+      // opzionale: svuota gli slot proposti per evitare riuso
+      alternativeSlots: [],
     }
-    
+
     await bookingRef.update(updateData)
 
-    // Send confirmation email
+    // Send confirmation email (non blocca se fallisce)
     try {
-      const customerId = bookingData.customerId || bookingData.userId
+      const customerId = (bookingData.customerId || (bookingData as any).userId) as string | undefined
       if (customerId) {
         const customer = await getCustomerById(customerId)
         if (customer) {
           const updatedBooking: Booking = {
             id: bookingId,
-            ...bookingData,
+            ...(bookingData as any),
             date: selectedSlot.date,
             startTime: selectedSlot.startTime,
             endTime: selectedSlot.endTime,
             status: "CONFIRMED",
             selectedAlternativeSlot: selectedSlot,
+            alternativeSlots: [],
           } as Booking
+
           await sendBookingConfirmationEmail(updatedBooking, customer)
         }
       }
@@ -83,7 +97,6 @@ export async function acceptAlternativeSlot(
         error: emailError?.message || emailError,
         bookingId,
       })
-      // Don't fail if email fails
     }
 
     const duration = Date.now() - startTime
@@ -103,8 +116,11 @@ export async function acceptAlternativeSlot(
 /**
  * Reject alternative slots (booking becomes rejected)
  */
-export async function rejectAlternativeSlots(bookingId: string): Promise<{ success: boolean; error?: string }> {
+export async function rejectAlternativeSlots(
+  bookingId: string
+): Promise<{ success: boolean; error?: string }> {
   const startTime = Date.now()
+
   try {
     if (!bookingId) {
       return { success: false, error: "Booking ID is required" }
@@ -119,7 +135,12 @@ export async function rejectAlternativeSlots(bookingId: string): Promise<{ succe
       return { success: false, error: "Prenotazione non trovata" }
     }
 
-    const bookingData = bookingSnap.data()
+    const bookingData = bookingSnap.data() as Partial<Booking> | undefined
+    if (!bookingData) {
+      logger.error("Booking snapshot exists but data is undefined", { bookingId })
+      return { success: false, error: "Dati prenotazione non disponibili" }
+    }
+
     if (bookingData.status !== "ALTERNATIVE_PROPOSED") {
       return { success: false, error: "La prenotazione non ha slot alternativi proposti" }
     }
@@ -128,7 +149,8 @@ export async function rejectAlternativeSlots(bookingId: string): Promise<{ succe
       status: "REJECTED",
       rejectionReason: "Cliente ha rifiutato gli slot alternativi proposti",
       updatedAt: new Date().toISOString(),
-    })
+      alternativeSlots: [],
+    } as any)
 
     const duration = Date.now() - startTime
     logger.info("Alternative slots rejected", { bookingId, duration })
@@ -143,4 +165,3 @@ export async function rejectAlternativeSlots(bookingId: string): Promise<{ succe
     return { success: false, error: "Errore durante il rifiuto degli slot alternativi. Riprova." }
   }
 }
-
