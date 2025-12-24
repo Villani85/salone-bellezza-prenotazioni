@@ -23,14 +23,21 @@ export async function getBookingsByDate(date: string): Promise<Booking[]> {
 
     bookingsSnapshot.forEach((doc) => {
       const data = doc.data()
+      if (!data) {
+        logger.warn("Booking data is undefined, skipping", { docId: doc.id })
+        return
+      }
       bookings.push({
         id: doc.id,
         date: data.date,
         startTime: data.startTime,
         endTime: data.endTime,
         status: data.status,
-        userId: data.userId,
+        customerId: data.customerId || data.userId || "",
         serviceId: data.serviceId,
+        salonId: data.salonId || "",
+        createdAt: convertTimestamp(data.createdAt) || new Date().toISOString(),
+        updatedAt: convertTimestamp(data.updatedAt),
       })
     })
 
