@@ -20,6 +20,8 @@ export async function getSalonConfig(): Promise<SalonConfig | null> {
         timeStep: 15,
         resources: 3,
         bufferTime: 10,
+        closedDaysOfWeek: [],
+        closedDates: [],
       }
     }
 
@@ -33,6 +35,8 @@ export async function getSalonConfig(): Promise<SalonConfig | null> {
         timeStep: 15,
         resources: 3,
         bufferTime: 10,
+        closedDaysOfWeek: [],
+        closedDates: [],
       }
     }
 
@@ -42,6 +46,8 @@ export async function getSalonConfig(): Promise<SalonConfig | null> {
       timeStep: data.timeStep || 15,
       resources: data.resources || 3,
       bufferTime: data.bufferTime || 10,
+      closedDaysOfWeek: data.closedDaysOfWeek || [],
+      closedDates: data.closedDates || [],
     }
 
     const duration = Date.now() - startTime
@@ -57,6 +63,8 @@ export async function getSalonConfig(): Promise<SalonConfig | null> {
       timeStep: 15,
       resources: 3,
       bufferTime: 10,
+      closedDaysOfWeek: [],
+      closedDates: [],
     }
   }
 }
