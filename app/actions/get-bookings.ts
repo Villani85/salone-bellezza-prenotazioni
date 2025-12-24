@@ -4,6 +4,7 @@ import { db } from "@/lib/firebase"
 import { collection, getDocs, query, where, orderBy } from "firebase/firestore"
 import type { Booking } from "@/types"
 import { logger } from "@/lib/logger"
+import { convertTimestamp } from "@/lib/firestore-utils"
 
 export async function getBookingsByDate(date: string): Promise<Booking[]> {
   const startTime = Date.now()
@@ -52,21 +53,33 @@ export async function getBookingsByUser(userId: string): Promise<Booking[]> {
     }
 
     const bookingsRef = collection(db, "bookings")
-    const q = query(bookingsRef, where("userId", "==", userId), orderBy("date", "desc"))
+    // Support both customerId and userId for backward compatibility
+    const q = query(
+      bookingsRef,
+      where("customerId", "==", userId),
+      orderBy("date", "desc")
+    )
     const bookingsSnapshot = await getDocs(q)
 
     const bookings: Booking[] = []
 
     bookingsSnapshot.forEach((doc) => {
       const data = doc.data()
+      if (!data) {
+        logger.warn("Booking data is undefined, skipping", { docId: doc.id })
+        return
+      }
       bookings.push({
         id: doc.id,
         date: data.date,
         startTime: data.startTime,
         endTime: data.endTime,
         status: data.status,
-        userId: data.userId,
+        customerId: data.customerId || data.userId || "",
         serviceId: data.serviceId,
+        salonId: data.salonId || "",
+        createdAt: convertTimestamp(data.createdAt) || new Date().toISOString(),
+        updatedAt: convertTimestamp(data.updatedAt),
       })
     })
 
